@@ -246,4 +246,27 @@ helpers.findNearestTeamMember = function(gameData) {
   return pathInfoObject.direction;
 };
 
+helpers.healDamageLeader = function(gameData) {
+  var hero = gameData.activeHero;
+  var board = gameData.board;
+  var team = gameData.teams[hero.team].slice();
+
+  team.sort(function(a,b) {
+    return b.damageDone - a.damageDone;
+  });
+
+  var current = 0;
+  var target = team[current];
+  while ((current < team.length) && (target.dead || (target.id === hero.id))) {
+    current++;
+    target = team[current];
+  }
+
+  var pathInfoObject = helpers.findNearestObjectDirectionAndDistance(board, hero, function(heroTile) {
+    return heroTile.type === 'Hero' && heroTile.id === target.id;
+  });
+
+  return pathInfoObject.direction;
+};
+
 module.exports = helpers;
